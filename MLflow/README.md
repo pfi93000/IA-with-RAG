@@ -10,6 +10,9 @@ docker build . -t mlflow:v1 --no-cache
 
 ```bash
 docker run -it --rm mlflow:v1 mlflow --help
+
+trivy image --scanners vuln,secret,misconfig,license --license-full --severity CRITICAL,HIGH mlflow:v1
+trivy fs --scanners config .
 ```
 
 ### Utilisation de l'image
