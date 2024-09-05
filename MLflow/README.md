@@ -24,10 +24,18 @@ docker build . -t mlflow:v1 --build-arg https_proxy_arg=192.168.5.54:8085 --buil
 ## Test de l'image
 
 ```bash
-docker run -it --rm mlflow:v1 mlflow --help
+docker run -it --rm mlflow:v1 mlflow --version
 
 trivy image --scanners vuln,secret,misconfig,license --license-full --severity CRITICAL,HIGH mlflow:v1
-trivy fs --scanners config .
+trivy fs .
+trivy fs --scanners misconfig .
+
+cd test
+docker compose build
+docker compose up -d
+docker compose logs
+docker compose down
+cd ..
 ```
 
 ### Utilisation de l'image
