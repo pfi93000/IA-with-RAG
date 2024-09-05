@@ -36,13 +36,10 @@ USER 10001
 WORKDIR /home/mlflow
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/mlflow/.local/bin
 
-# version 1 : requirements.txt contient uniquement "mlflow"
-# version 2 : requirements.txt contient le résultat de la commande docker run -it --rm mlflow:v1 pip-3.12 freeze > .\requirements.txt
 COPY requirements.txt .
 RUN pip-3.12 install --upgrade -r requirements.txt
 
-HEALTHCHECK --interval=5m --timeout=3s --start-period=60s --retries=2 \
-  CMD curl -f http://localhost:8080/ 2>/dev/null | grep MLflow || exit 1
+ENV MLFLOW_URI="http://mlflow-serveur:8080/"
+COPY test.py .
 
-EXPOSE 8080
-CMD ["mlflow", "server", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["sh", "-c", "echo ${MLFLOW_URI} ; python3.12 test.py $MLFLOW_URI"]
