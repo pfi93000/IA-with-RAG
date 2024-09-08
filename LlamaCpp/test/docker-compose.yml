@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  llamacpp:
+    image: llamacpp:v1
+    restart: none
+    tty: true
+    environment:
+      - TZ=Europe/Paris
+      - MLFLOW_URI=http://mlflow-serveur:8080/
+    depends_on:
+      mlflow-serveur:
+        condition: service_healthy
+    links:
+      - mlflow-serveur
+    networks:
+      - mlflow
+    ports:
+      - "8888:8888"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  mlflow-serveur:
+    image: mlflow:v1
+    restart: none
+    tty: false
+    environment:
+      - TZ="Europe/Paris"
+    ports:
+      - "8080:8080"
+    networks:
+      - mlflow
+    healthcheck:
+        test: curl --fail http://localhost:8080/ 2>/dev/null | grep MLflow || exit 1
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+networks:
+  mlflow:
+    driver: bridge
