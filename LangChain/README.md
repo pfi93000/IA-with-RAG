@@ -34,6 +34,10 @@ cd test
 docker compose build
 docker compose up -d
 docker compose logs
+http://127.0.0.1:8888/notebooks/LangChain_MLflow.ipynb?token=2FROw06Ur6Hi3ozYEy6U
+http://127.0.0.1:8080/#/experiments/0
+    Experiment: my-experiment
+        Traces
 docker compose down
 cd ..
 ```
