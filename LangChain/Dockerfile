@@ -48,8 +48,7 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/jupy
 
 RUN mkdir -p models data && curl -L https://raw.githubusercontent.com/run-llama/llama_index/main/docs/docs/examples/data/paul_graham/paul_graham_essay.txt -o ./data/paul_graham_essay.txt
 ADD --chmod=0555 --chown=jupyter https://huggingface.co/QuantFactory/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf models/llama.gguf
-# COPY Meta-Llama-3-8B-Instruct.Q4_K_M.gguf models/llama.gguf
-COPY --chmod=0755 --chown=jupyter llama_cpp.ipynb .
+COPY --chmod=0755 --chown=jupyter LangChain_MLflow.ipynb .
 
 # README de llama-cpp : https://github.com/abetlen/llama-cpp-python/blob/main/README.md
 COPY requirements.txt .
@@ -60,3 +59,5 @@ HEALTHCHECK --interval=5m --timeout=3s --start-period=60s --retries=2 \
 
 EXPOSE 8888
 CMD [ "jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--NotebookApp.token=2FROw06Ur6Hi3ozYEy6U" ]
+
+COPY --chmod=0755 --chown=jupyter llama_cpp.ipynb .
