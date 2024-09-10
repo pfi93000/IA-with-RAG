@@ -1,4 +1,6 @@
-# MLflow
+# LangChain
+
+Utilisation de LangChain pour appeller un LLM, puis envoi des données à MLflow
 
 ## Création de l'image docker
 
