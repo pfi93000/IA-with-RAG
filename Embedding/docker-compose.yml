@@ -1,0 +1,69 @@
+version: '3.9'
+
+services:
+  embedding:
+    image: michaelf34/infinity:0.0.55
+    command: ["v2", "--model-id", "intfloat/multilingual-e5-base", "--port", "7997"]
+    restart: none
+    tty: true
+    environment:
+      - TZ=Europe/Paris
+    networks:
+      - mlflow
+    ports:
+      - "7997:7997"
+    volumes:
+      - emb_data:/app/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+        test: curl --fail http://localhost:7997/health 2>/dev/null || exit 1
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  mlflow-serveur:
+    image: mlflow:v1
+    restart: none
+    tty: false
+    environment:
+      - TZ="Europe/Paris"
+    ports:
+      - "8080:8080"
+    networks:
+      - mlflow
+    healthcheck:
+        test: curl --fail http://localhost:8080/ 2>/dev/null | grep MLflow || exit 1
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  numpy:
+    image: numpy:v1
+    build:
+      dockerfile: Dockerfile
+    tty: true
+    environment:
+      - TZ="Europe/Paris"
+    depends_on:
+      mlflow-serveur:
+        condition: service_healthy
+      embedding:
+        condition: service_healthy
+    links:
+      - mlflow-serveur
+      - embedding
+    networks:
+      - mlflow
+    
+networks:
+  mlflow:
+    driver: bridge
+
+volumes:
+  emb_data:
