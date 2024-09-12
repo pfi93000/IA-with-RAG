@@ -1,4 +1,4 @@
-FROM rockylinux:9-minimal
+FROM rockylinux:9-minimal AS prod
 
 ARG http_proxy_arg
 ARG https_proxy_arg
@@ -46,13 +46,14 @@ USER 10001
 WORKDIR /home/jupyter
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/jupyter/.local/bin:/usr/local/cuda-12.4/bin
 
-RUN mkdir -p models data && curl -L https://raw.githubusercontent.com/run-llama/llama_index/main/docs/docs/examples/data/paul_graham/paul_graham_essay.txt -o ./data/paul_graham_essay.txt
-ADD --chmod=0555 --chown=jupyter https://huggingface.co/QuantFactory/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf models/llama.gguf
-COPY --chmod=0755 --chown=jupyter LangChain_MLflow.ipynb .
-
 # README de llama-cpp : https://github.com/abetlen/llama-cpp-python/blob/main/README.md
 COPY requirements.txt .
 RUN pip3.12 install --upgrade -r requirements.txt llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
+
+RUN mkdir -p models data && curl -L https://raw.githubusercontent.com/run-llama/llama_index/main/docs/docs/examples/data/paul_graham/paul_graham_essay.txt -o ./data/paul_graham_essay.txt
+
+COPY --chmod=0755 --chown=jupyter LangChain_MLflow.ipynb .
+COPY --chmod=0755 --chown=jupyter llama_cpp.ipynb .
 
 HEALTHCHECK --interval=5m --timeout=3s --start-period=60s --retries=2 \
   CMD curl -f http://localhost:8888/ 2>/dev/null || exit 1
@@ -60,4 +61,5 @@ HEALTHCHECK --interval=5m --timeout=3s --start-period=60s --retries=2 \
 EXPOSE 8888
 CMD [ "jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--NotebookApp.token=2FROw06Ur6Hi3ozYEy6U" ]
 
-COPY --chmod=0755 --chown=jupyter llama_cpp.ipynb .
+FROM prod AS moa
+ADD --chmod=0555 --chown=jupyter https://huggingface.co/QuantFactory/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf models/llama.gguf
