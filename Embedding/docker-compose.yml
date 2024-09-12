@@ -2,8 +2,8 @@ version: '3.9'
 
 services:
   embedding:
-    image: michaelf34/infinity:0.0.55
-    command: ["v2", "--model-id", "intfloat/multilingual-e5-base", "--port", "7997"]
+    image: michaelf34/infinity:${INFINITY}
+    command: ["v2", "--model-id", "${MODEL_EMBEDDING}", "--port", "7997"]
     restart: none
     tty: true
     environment:

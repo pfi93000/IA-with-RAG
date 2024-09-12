@@ -11,8 +11,8 @@ docker pull michaelf34/infinity:0.0.55
 ## Test de l'image
 
 ```bash
-docker compose build
-docker compose up -d
+docker compose --env-file config.env build
+docker compose  --env-file config.env up -d
 docker compose logs
 http://127.0.0.1:8080/#/experiments/0
     Experiment: embedding
@@ -21,7 +21,7 @@ docker compose down
 trivy image --scanners vuln --severity CRITICAL,HIGH michaelf34/infinity:0.0.55
 
 cd test
-docker compose up -d
+docker compose --env-file ../config.env up -d
 docker compose logs
 http://127.0.0.1:8888/notebooks/Embedding.ipynb?token=2FROw06Ur6Hi3ozYEy6U
 http://127.0.0.1:8080/#/experiments/0
