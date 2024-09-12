@@ -20,7 +20,7 @@ Il est possible d'ajouter des arguments lors du Build :
 Exemple :
 
 ```bash
-docker build . -t llamacpp:v1 --build-arg https_proxy_arg=192.168.5.54:8085 --build-arg nexus_hostname=192.168.5.6 --build-arg nexus_pypi=pypi
+docker build . -t llamacpp:v1 --build-arg https_proxy_arg=192.168.5.54:8085 --build-arg nexus_hostname=192.168.5.6 --build-arg nexus_pypi=pypi --target prod
 ```
 
 ## Test de l'image
