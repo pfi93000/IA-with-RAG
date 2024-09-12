@@ -45,6 +45,8 @@ services:
 
   numpy:
     image: numpy:v1
+    build:
+      dockerfile: ../Dockerfile
     tty: true
     environment:
       - TZ="Europe/Paris"

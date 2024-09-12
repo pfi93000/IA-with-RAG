@@ -11,6 +11,7 @@ docker pull michaelf34/infinity:0.0.55
 ## Test de l'image
 
 ```bash
+cat config.env
 docker compose --env-file config.env build
 docker compose  --env-file config.env up -d
 docker compose logs
