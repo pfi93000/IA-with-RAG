@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose.exe convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: embedding
+  name: embedding
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: embedding
+    spec:
+      containers:
+      - args:
+        - v2
+        - --model-id
+        - ""
+        - --port
+        - "7997"
+        env:
+        - name: TZ
+          value: Europe/Paris
+        image: 'michaelf34/infinity:'
+        livenessProbe:
+          exec:
+            command:
+            - curl --fail http://localhost:7997/health 2>/dev/null && curl --fail
+              http://0.0.0.0:7997/models 2>/dev/null || exit 1
+          failureThreshold: 5
+          periodSeconds: 30
+          timeoutSeconds: 10
+        name: embedding
+        ports:
+        - containerPort: 7997
+        resources: {}
+        tty: true
+        volumeMounts:
+        - mountPath: /app/.cache
+          name: emb-data
+      restartPolicy: Never
+      volumes:
+      - name: emb-data
+        persistentVolumeClaim:
+          claimName: emb-data
+status: {}
