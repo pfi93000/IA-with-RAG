@@ -1,0 +1,99 @@
+version: '3.9'
+
+services:
+  ollama:
+    image: ollama:v1
+    restart: none
+    tty: true
+    environment:
+      - TZ=Europe/Paris
+    networks:
+      - mlflow
+    expose:
+      - 11434
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+        test: curl --fail http://localhost:11434/api/tags 2>/dev/null || exit 1
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  embedding:
+    image: michaelf34/infinity:${INFINITY}
+    command: ["v2", "--model-id", "${MODEL_EMBEDDING}", "--port", "7997"]
+    restart: none
+    tty: true
+    environment:
+      - TZ=Europe/Paris
+    networks:
+      - mlflow
+    ports:
+      - "7997:7997"
+    volumes:
+      - emb_data:/app/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+        test: curl --fail http://localhost:7997/health 2>/dev/null && curl --fail http://0.0.0.0:7997/models 2>/dev/null || exit 1
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  llamacpp:
+    image: llamacpp:rag
+    build:
+      dockerfile: Dockerfile
+    restart: none
+    tty: true
+    environment:
+      - TZ=Europe/Paris
+      - MLFLOW_URI=http://mlflow-serveur:8080/
+    depends_on:
+      mlflow-serveur:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+      embedding:
+        condition: service_healthy
+    links:
+      - mlflow-serveur
+      - ollama
+      - embedding
+    networks:
+      - mlflow
+    ports:
+      - "8888:8888"
+
+  mlflow-serveur:
+    image: mlflow:v1
+    restart: none
+    tty: false
+    environment:
+      - TZ="Europe/Paris"
+    ports:
+      - "8080:8080"
+    networks:
+      - mlflow
+    healthcheck:
+        test: curl --fail http://localhost:8080/ 2>/dev/null | grep MLflow || exit 1
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+networks:
+  mlflow:
+    driver: bridge
+
+volumes:
+  emb_data:
