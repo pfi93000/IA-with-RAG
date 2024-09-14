@@ -115,7 +115,7 @@ down: ## stop docker-compose environment. Docker volumes are keeped
 	@cd docker-compose && \
 	INFINITY=$(INFINITY) MODEL_EMBEDDING=$(MODEL_EMBEDDING) docker compose down
 
-clean: down ## delete docker images, docker volumes
+clean: down ## stop containers, delete docker images, docker volumes et k8s objects
 	@cd docker-compose && \
 	INFINITY=$(INFINITY) MODEL_EMBEDDING=$(MODEL_EMBEDDING) docker compose down --volumes
 	@docker rmi michaelf34/infinity:$(INFINITY) || true
@@ -123,6 +123,7 @@ clean: down ## delete docker images, docker volumes
 	@docker rmi mlflow:v1 || true
 	@docker rmi ollama:v1 || true
 	@docker image prune --force || true
+	@kubectl delete -f k8s || true
 
 k8s: embedding langchain mlflow ollama ## build docker images and deploy them into a k8s
 	@cd docker-compose && \
