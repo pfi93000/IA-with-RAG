@@ -109,15 +109,15 @@ ollama: ## build a docker image with a MLflow server
 
 up: embedding langchain mlflow ollama ## build docker images and run them on Docker
 	@cd docker-compose && \
-	MODEL_EMBEDDING=$(MODEL_EMBEDDING) docker compose up --detach --force-recreate --remove-orphans
+	INFINITY=$(INFINITY) MODEL_EMBEDDING=$(MODEL_EMBEDDING) docker compose up --detach --force-recreate --remove-orphans --build
 
 down: ## stop docker-compose environment. Docker volumes are keeped
 	@cd docker-compose && \
-	docker compose down
+	INFINITY=$(INFINITY) MODEL_EMBEDDING=$(MODEL_EMBEDDING) docker compose down
 
 clean: down ## delete docker images, docker volumes
 	@cd docker-compose && \
-	docker compose down --volumes
+	INFINITY=$(INFINITY) MODEL_EMBEDDING=$(MODEL_EMBEDDING) docker compose down --volumes
 	@docker rmi michaelf34/infinity:$(INFINITY) || true
 	@docker rmi llamacpp:v1 || true
 	@docker rmi mlflow:v1 || true
