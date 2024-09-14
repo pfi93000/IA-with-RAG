@@ -26,6 +26,8 @@ Remarque : Ollama pourrait être utilisé aussi pour exposer un modèle dédié 
 
 ## Installation
 
+### Docker
+
 Tous les logiciels seront packagés puis installés sur un serveur Docker avec la commande suivante :
 
 ```bash
@@ -36,3 +38,9 @@ make up
 
 - le logiciel MLflow : http://127.0.0.1:8080/
 - Jupyter Notebook pour lancer LangChain : http://127.0.0.1:8888/notebooks/rag.ipynb?token=2FROw06Ur6Hi3ozYEy6U
+
+### Kubernetes
+
+```bash
+make k8s
+```
