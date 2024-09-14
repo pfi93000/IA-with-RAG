@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose.exe convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: embedding
+  name: embedding
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      io.kompose.service: embedding
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: embedding
+    spec:
+      containers:
+      - args:
+        - v2
+        - --model-id
+        - "intfloat/multilingual-e5-base"
+        - --port
+        - "7997"
+        env:
+        - name: TZ
+          value: Europe/Paris
+        image: 'michaelf34/infinity:0.0.55'
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7997
+          initialDelaySeconds: 40
+          failureThreshold: 5
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /models
+            port: 7997
+          initialDelaySeconds: 40
+          failureThreshold: 5
+          periodSeconds: 30
+          timeoutSeconds: 10
+        name: embedding
+        ports:
+        - containerPort: 7997
+        resources: {}
+        tty: true
+#        volumeMounts:
+#        - mountPath: /app/.cache
+#          name: emb-data
+      restartPolicy: Always
+#      volumes:
+#      - name: emb-data
+#        persistentVolumeClaim:
+#          claimName: emb-data
+status: {}

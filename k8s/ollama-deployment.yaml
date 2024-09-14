@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose.exe convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ollama
+  name: ollama
+spec:
+  replicas: 1
+  strategy: {}
+  selector:
+    matchLabels:
+      io.kompose.service: ollama
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ollama
+    spec:
+      containers:
+      - env:
+        - name: TZ
+          value: Europe/Paris
+        image: ollama:v1
+        livenessProbe:
+          httpGet:
+            path: /api/tags
+            port: 11434
+          failureThreshold: 5
+          periodSeconds: 30
+          timeoutSeconds: 10
+        name: ollama
+        resources: {}
+        tty: true
+      restartPolicy: Always
+status: {}

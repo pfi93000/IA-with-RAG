@@ -1,4 +1,4 @@
-.PHONY: up down clean embedding langchain mlflow ollama help
+.PHONY: up down clean embedding langchain mlflow ollama help k8s
 .DEFAULT_GOAL := help
 
 SHELL := /bin/bash
@@ -123,6 +123,11 @@ clean: down ## delete docker images, docker volumes
 	@docker rmi mlflow:v1 || true
 	@docker rmi ollama:v1 || true
 	@docker image prune --force || true
+
+k8s: embedding langchain mlflow ollama ## build docker images and deploy them into a k8s
+	@cd docker-compose && \
+	docker build . -t llamacpp:rag --cache-from llamacpp:rag
+	@kubectl apply -f k8s
 
 help: ## print this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {gsub("\\\\n",sprintf("\n%22c",""), $$2);printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
