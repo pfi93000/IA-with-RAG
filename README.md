@@ -41,6 +41,8 @@ make up
 
 ### Kubernetes
 
+Tous les logiciels seront packagés puis installés sur un cluster kubernetes avec la commande suivante :
+
 ```bash
 make k8s
 ```
