@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -12,6 +12,9 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      io.kompose.service: embedding
   template:
     metadata:
       creationTimestamp: null
@@ -22,18 +25,26 @@ spec:
       - args:
         - v2
         - --model-id
-        - ""
+        - "intfloat/multilingual-e5-base"
         - --port
         - "7997"
         env:
         - name: TZ
           value: Europe/Paris
-        image: 'michaelf34/infinity:'
+        image: 'michaelf34/infinity:0.0.55'
         livenessProbe:
-          exec:
-            command:
-            - curl --fail http://localhost:7997/health 2>/dev/null && curl --fail
-              http://0.0.0.0:7997/models 2>/dev/null || exit 1
+          httpGet:
+            path: /health
+            port: 7997
+          initialDelaySeconds: 40
+          failureThreshold: 5
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /models
+            port: 7997
+          initialDelaySeconds: 40
           failureThreshold: 5
           periodSeconds: 30
           timeoutSeconds: 10
@@ -42,12 +53,12 @@ spec:
         - containerPort: 7997
         resources: {}
         tty: true
-        volumeMounts:
-        - mountPath: /app/.cache
-          name: emb-data
-      restartPolicy: Never
-      volumes:
-      - name: emb-data
-        persistentVolumeClaim:
-          claimName: emb-data
+#        volumeMounts:
+#        - mountPath: /app/.cache
+#          name: emb-data
+      restartPolicy: Always
+#      volumes:
+#      - name: emb-data
+#        persistentVolumeClaim:
+#          claimName: emb-data
 status: {}

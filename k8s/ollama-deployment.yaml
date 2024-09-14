@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -11,6 +11,9 @@ metadata:
 spec:
   replicas: 1
   strategy: {}
+  selector:
+    matchLabels:
+      io.kompose.service: ollama
   template:
     metadata:
       creationTimestamp: null
@@ -23,14 +26,14 @@ spec:
           value: Europe/Paris
         image: ollama:v1
         livenessProbe:
-          exec:
-            command:
-            - curl --fail http://localhost:11434/api/tags 2>/dev/null || exit 1
+          httpGet:
+            path: /api/tags
+            port: 11434
           failureThreshold: 5
           periodSeconds: 30
           timeoutSeconds: 10
         name: ollama
         resources: {}
         tty: true
-      restartPolicy: Never
+      restartPolicy: Always
 status: {}
