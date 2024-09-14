@@ -16,13 +16,13 @@ Infinity est utilisé pour exposer une API dédiée à l'Embedding
 
 ### Ollama
 
-Ollama est utilisé par exposer une API dédiée au LLMs.
+[Ollama](https://github.com/ollama/ollama) est utilisé par exposer une API dédiée au LLMs.
 
 Remarque : Ollama pourrait être utilisé aussi pour exposer un modèle dédié à l'embedding.
 
 ### LangChain
 
-LangChain est utilisé pour montrer l'accès aux LLMs (local ou OpenAI) avec un exemple simple.
+[LangChain](https://github.com/langchain-ai/langchain) est utilisé pour montrer l'accès aux LLMs (local ou OpenAI) avec un exemple simple.
 
 ## Installation
 
@@ -32,7 +32,7 @@ Tous les logiciels seront packagés puis installés sur un serveur Docker avec l
 make up
 ```
 
-Accès locaux :
+2 interfaces web sont alors disponibles :
 
-- MLflow : http://127.0.0.1:8080/
+- le logiciel MLflow : http://127.0.0.1:8080/
 - Jupyter Notebook pour lancer LangChain : http://127.0.0.1:8888/notebooks/rag.ipynb?token=2FROw06Ur6Hi3ozYEy6U
