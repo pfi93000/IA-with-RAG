@@ -19,3 +19,12 @@ docker run -itd --volume="sonarqube_data=/opt/sonarqube/data" --volume="sonarqub
 ```bash
 docker run -itd --rm --volume="nexus:/nexus-data" -p 8081:8081 --name nexus sonatype/nexus3:3.71.0-java17-alpine
 ```
+
+## LemonLDAP
+
+[Exposition des services de façon sécurisée](https://lemonldap-ng.org/)
+
+```bash
+cd LemonLDAP
+docker compose up --build -d
+```
