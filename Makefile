@@ -1,5 +1,5 @@
-.PHONY: up down clean embedding langchain mlflow ollama help k8s
-.DEFAULT_GOAL := help
+.PHONY: up down clean embedding langchain mlflow ollama help k8s all
+.DEFAULT_GOAL := all
 
 SHELL := /bin/bash
 
@@ -107,9 +107,11 @@ ollama: ## build a docker image with a MLflow server
 	--cache-from ollama:v1 \
 	--pull
 
-up: embedding langchain mlflow ollama ## build docker images and run them on Docker
+up: all ## build docker images and run them on Docker
 	@cd docker-compose && \
 	INFINITY=$(INFINITY) MODEL_EMBEDDING=$(MODEL_EMBEDDING) docker compose up --detach --force-recreate --remove-orphans --build
+
+all: embedding langchain mlflow ollama ## build docker images
 
 down: ## stop docker-compose environment. Docker volumes are keeped
 	@cd docker-compose && \
@@ -125,7 +127,7 @@ clean: down ## stop containers, delete docker images, docker volumes et k8s obje
 	@docker image prune --force || true
 	@kubectl delete -f k8s || true
 
-k8s: embedding langchain mlflow ollama ## build docker images and deploy them into a k8s
+k8s: all ## build docker images and deploy them into a k8s
 	@cd docker-compose && \
 	docker build . -t llamacpp:rag --cache-from llamacpp:rag
 	@kubectl apply -f k8s
