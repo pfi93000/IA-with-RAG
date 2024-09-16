@@ -19,8 +19,6 @@ docker run -itd --volume="sonarqube_data=/opt/sonarqube/data" --volume="sonarqub
 ```bash
 docker run -itd --rm --volume="nexus:/nexus-data" -p 8081:8081 --name nexus sonatype/nexus3:3.71.0-java17-alpine
 ```
-<<<<<<< Updated upstream
-=======
 
 ## LemonLDAP
 
@@ -39,4 +37,3 @@ docker compose up --build -d
 pip install pylint
 pylint main.py
 ```
->>>>>>> Stashed changes
